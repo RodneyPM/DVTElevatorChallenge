@@ -11,5 +11,6 @@ namespace ElevatorChallenge.Domain.Repositories
     {
         IEnumerable<Elevator> GetAllElevators();
         Elevator GetNearestAvailableElevator(int floor);
+        void Save(Elevator elevator);
     }
 }
