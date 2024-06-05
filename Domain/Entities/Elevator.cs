@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace ElevatorChallenge.Domain.Entities
 {
+
     public class Elevator
     {
         public int Id { get; private set; }
@@ -15,6 +16,7 @@ namespace ElevatorChallenge.Domain.Entities
         public bool IsMoving { get; private set; }
         public List<Passenger> Passengers { get; private set; }
         public int MaxCapacity { get; private set; }
+        private Queue<int> _floorRequests;
 
         public Elevator(int id, int initialFloor, int maxCapacity)
         {
@@ -24,9 +26,10 @@ namespace ElevatorChallenge.Domain.Entities
             IsMoving = false;
             Passengers = new List<Passenger>();
             MaxCapacity = maxCapacity;
+            _floorRequests = new Queue<int>();
         }
 
-        public void MoveToFloor(int floor)
+        public async Task MoveToFloorAsync(int floor)
         {
             IsMoving = true;
             while (CurrentFloor != floor)
@@ -43,7 +46,7 @@ namespace ElevatorChallenge.Domain.Entities
                 }
 
                 // Simulate the time taken to move between floors
-                Thread.Sleep(1000);
+                await Task.Delay(1000);
 
                 // Display the current status of the elevator
                 DisplayStatus();
@@ -55,7 +58,7 @@ namespace ElevatorChallenge.Domain.Entities
 
         public void DisplayStatus()
         {
-            Console.WriteLine($"Elevator {Id}: Floor {CurrentFloor}, Direction: {Direction}, Passengers: {Passengers.Count}");
+            Console.WriteLine($"Elevator {Id}: Floor {CurrentFloor}, Direction: {Direction}, Is Moving: {IsMoving}, Passengers: {Passengers.Count}");
         }
 
         public bool CanTakeMorePassengers(int passengersCount)
@@ -79,5 +82,19 @@ namespace ElevatorChallenge.Domain.Entities
         {
             Passengers.RemoveAll(p => p.DestinationFloor == CurrentFloor);
         }
+
+        public void RequestFloor(int floor)
+        {
+            if (!_floorRequests.Contains(floor))
+            {
+                _floorRequests.Enqueue(floor);
+            }
+        }
+
+        public int? GetNextFloorRequest()
+        {
+            return _floorRequests.Count > 0 ? _floorRequests.Dequeue() : (int?)null;
+        }
     }
 }
+
