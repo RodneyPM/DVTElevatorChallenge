@@ -14,12 +14,21 @@ namespace ElevatorChallenge.Infrastructure.Repositories
 
         public ElevatorRepository()
         {
+            // Initialize with some elevators
             _elevators = new List<Elevator>
             {
-                new Elevator(1, 1, 5),
-                new Elevator(2, 1, 5),
-                new Elevator(3, 1, 5)
+                new Elevator(1, 0, 10),
+                new Elevator(2, 0, 10),
+                new Elevator(3, 0, 10)
             };
+        }
+
+        public Elevator GetNearestAvailableElevator(int requestFloor)
+        {
+            return _elevators
+                .Where(e => !e.IsMoving)
+                .OrderBy(e => System.Math.Abs(e.CurrentFloor - requestFloor))
+                .FirstOrDefault();
         }
 
         public IEnumerable<Elevator> GetAllElevators()
@@ -27,18 +36,10 @@ namespace ElevatorChallenge.Infrastructure.Repositories
             return _elevators;
         }
 
-        public Elevator GetNearestAvailableElevator(int floor)
-        {
-            return _elevators
-                .Where(e => !e.IsMoving)
-                .OrderBy(e => System.Math.Abs(e.CurrentFloor - floor))
-                .FirstOrDefault();
-        }
-
         public void Save(Elevator elevator)
         {
             var index = _elevators.FindIndex(e => e.Id == elevator.Id);
-            if (index >= 0)
+            if (index != -1)
             {
                 _elevators[index] = elevator;
             }

@@ -39,7 +39,7 @@ namespace ElevatorChallenge.Application.Services
             var nextFloor = elevator.GetNextFloorRequest();
             while (nextFloor.HasValue)
             {
-                await elevator.MoveToFloorAsync(nextFloor.Value);
+                await elevator.MoveToFloorAsync(nextFloor.Value, elevator.Passengers);
 
                 // Add passengers when the elevator arrives at the requested floor
                 if (elevator.CurrentFloor == requestFloor)
@@ -49,10 +49,13 @@ namespace ElevatorChallenge.Application.Services
                         .ToList();
 
                     elevator.AddPassengers(passengers);
-                }
 
-                // Remove passengers who reached their destination
-                elevator.RemovePassengers();
+                    // Request destination floors for each passenger
+                    foreach (var passenger in passengers)
+                    {
+                        elevator.RequestFloor(passenger.DestinationFloor);
+                    }
+                }
 
                 nextFloor = elevator.GetNextFloorRequest();
                 _elevatorRepository.Save(elevator);
