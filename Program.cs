@@ -32,6 +32,9 @@ while (true)
                     int destinationFloor = int.Parse(Console.ReadLine());
                     passengerDTOs.Add(new PassengerDTO { DestinationFloor = destinationFloor });
                 }
+                // Sort passengers by destination floor from lowest to highest
+                passengerDTOs = passengerDTOs.OrderBy(p => p.DestinationFloor).ToList();
+
                 await elevatorService.RequestElevatorAsync(floor, passengerDTOs);
             }
             catch (FormatException ex)
