@@ -16,7 +16,7 @@ namespace ElevatorChallenge.Domain.Entities
         public bool IsMoving { get; private set; }
         public List<Passenger> Passengers { get; private set; }
         public int MaxCapacity { get; private set; }
-        private Queue<int> _floorRequests;
+        private List<int> _floorRequests;
 
         public Elevator(int id, int initialFloor, int maxCapacity)
         {
@@ -26,10 +26,10 @@ namespace ElevatorChallenge.Domain.Entities
             IsMoving = false;
             Passengers = new List<Passenger>();
             MaxCapacity = maxCapacity;
-            _floorRequests = new Queue<int>();
+            _floorRequests = new List<int>();
         }
 
-        public async Task MoveToFloorAsync(int floor)
+        public async Task MoveToFloorAsync(int floor, List<Passenger> passengers)
         {
             IsMoving = true;
             while (CurrentFloor != floor)
@@ -54,6 +54,14 @@ namespace ElevatorChallenge.Domain.Entities
 
             Direction = Direction.Stationary;
             IsMoving = false;
+
+            // Remove passengers who reached their destination
+            var passengersToRemove = Passengers.Where(p => p.DestinationFloor == CurrentFloor).ToList();
+            foreach (var passenger in passengersToRemove)
+            {
+                Passengers.Remove(passenger);
+                Console.WriteLine($"Passenger arrived at floor {CurrentFloor}. Passengers left: {Passengers.Count}");
+            }
         }
 
         public void DisplayStatus()
@@ -78,22 +86,23 @@ namespace ElevatorChallenge.Domain.Entities
             }
         }
 
-        public void RemovePassengers()
-        {
-            Passengers.RemoveAll(p => p.DestinationFloor == CurrentFloor);
-        }
-
         public void RequestFloor(int floor)
         {
             if (!_floorRequests.Contains(floor))
             {
-                _floorRequests.Enqueue(floor);
+                _floorRequests.Add(floor);
             }
         }
 
         public int? GetNextFloorRequest()
         {
-            return _floorRequests.Count > 0 ? _floorRequests.Dequeue() : (int?)null;
+            if (_floorRequests.Count == 0)
+                return null;
+
+            // Find the nearest floor request
+            int nearestFloor = _floorRequests.OrderBy(f => System.Math.Abs(f - CurrentFloor)).First();
+            _floorRequests.Remove(nearestFloor);
+            return nearestFloor;
         }
     }
 }
