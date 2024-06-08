@@ -11,63 +11,31 @@ namespace ElevatorChallenge.Application.Services
 {
     public class ElevatorService
     {
-        private readonly IElevatorRepository _elevatorRepository;
+        private readonly ElevatorManager _elevatorManager;
 
-        public ElevatorService(IElevatorRepository elevatorRepository)
+        public ElevatorService(ElevatorManager elevatorManager)
         {
-            _elevatorRepository = elevatorRepository;
+            _elevatorManager = elevatorManager;
         }
 
-        public async Task RequestElevatorAsync(int floor, List<PassengerDTO> passengerDTOs)
+        public async Task RequestElevatorAsync(int floor, List<Passenger> passengers)
         {
-            var elevator = _elevatorRepository.GetNearestAvailableElevator(floor);
-            if (elevator != null)
+            // Sort passengers by destination floor from lowest to highest
+            passengers = passengers.OrderBy(p => p.DestinationFloor).ToList();
+            // Split passengers to different elevators
+
+            //await _elevatorManager.AddPassengersToElevators(passengers);
+
+            // Move elevators to the respective floors for each passenger
+            foreach (var passenger in passengers)
             {
-                elevator.RequestFloor(floor);
-                _elevatorRepository.Save(elevator);
-
-                await OperateElevatorAsync(elevator, floor, passengerDTOs);
-            }
-            else
-            {
-                Console.WriteLine("No available elevators at the moment.");
-            }
-        }
-
-        public async Task OperateElevatorAsync(Elevator elevator, int requestFloor, List<PassengerDTO> passengerDTOs)
-        {
-            var nextFloor = elevator.GetNextFloorRequest();
-            while (nextFloor.HasValue)
-            {
-                await elevator.MoveToFloorAsync(nextFloor.Value, elevator.Passengers);
-
-                // Add passengers when the elevator arrives at the requested floor
-                if (elevator.CurrentFloor == requestFloor)
-                {
-                    var passengers = passengerDTOs
-                        .Select(dto => new Passenger(dto.DestinationFloor))
-                        .ToList();
-
-                    elevator.AddPassengers(passengers);
-
-                    // Request destination floors for each passenger
-                    foreach (var passenger in passengers)
-                    {
-                        elevator.RequestFloor(passenger.DestinationFloor);
-                    }
-                }
-
-                nextFloor = elevator.GetNextFloorRequest();
-                _elevatorRepository.Save(elevator);
+                await _elevatorManager.MoveToFloorAsync(passenger.DestinationFloor);
             }
         }
 
-        public void DisplayElevatorStatuses()
+        public async Task DisplayElevatorsStatusAsync()
         {
-            foreach (var elevator in _elevatorRepository.GetAllElevators())
-            {
-                elevator.DisplayStatus();
-            }
+            await _elevatorManager.DisplayElevatorStatusAsync();
         }
     }
 }
