@@ -29,7 +29,7 @@ namespace ElevatorChallenge.Application.Services
             // Move elevators to the respective floors for each passenger
             foreach (var passenger in passengers)
             {
-                await _elevatorManager.MoveToFloorAsync(passenger.DestinationFloor);
+                await _elevatorManager.MoveToFloorAsync();
             }
         }
 

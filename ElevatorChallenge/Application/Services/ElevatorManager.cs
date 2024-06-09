@@ -1,4 +1,5 @@
-﻿using ElevatorChallenge.Domain.Entities;
+﻿using ElevatorChallenge.Application.DTOs;
+using ElevatorChallenge.Domain.Entities;
 using ElevatorChallenge.Domain.Repositories;
 using ElevatorChallenge.Domain.ValueObjects;
 using System;
@@ -18,12 +19,13 @@ namespace ElevatorChallenge.Application.Services
             _elevatorRepository = elevatorRepository;
         }
 
-        public async Task AddPassengersToElevatorsAsync(List<Passenger> passengers)
+        public async Task<Dictionary<Elevator, List<Passenger>>> AddPassengersToElevatorsAsync(List<Passenger> passengers)
         {
             var elevators = await _elevatorRepository.GetElevatorsAsync();
 
             // Distribute passengers among elevators
             int i = 0;
+            var elevatorPassengerMap = new Dictionary<Elevator, List<Passenger>>();
             while (i < passengers.Count)
             {
                 bool added = false;
@@ -37,6 +39,12 @@ namespace ElevatorChallenge.Application.Services
                         elevator.AddPassengers(sublist);
                         i += passengersToAdd;
                         added = true;
+
+                        if (!elevatorPassengerMap.ContainsKey(elevator))
+                        {
+                            elevatorPassengerMap[elevator] = new List<Passenger>();
+                        }
+                        elevatorPassengerMap[elevator].AddRange(sublist);
                         break;
                     }
                 }
@@ -60,9 +68,12 @@ namespace ElevatorChallenge.Application.Services
             await _elevatorRepository.UpdateElevatorsAsync(elevators);
             // Display the status of the elevators
             await DisplayElevatorStatusAsync();
+
+            return elevatorPassengerMap;
+            
         }
 
-        public async Task MoveToFloorAsync(int floor)
+        public async Task<List<ElevatorStateDTO>> MoveToFloorAsync()
         {
             var elevators = await _elevatorRepository.GetElevatorsAsync();
 
@@ -73,18 +84,32 @@ namespace ElevatorChallenge.Application.Services
 
             // Update repository with the new elevator states
             await _elevatorRepository.UpdateElevatorsAsync(elevators);
+
             // Display the status of the elevators
             await DisplayElevatorStatusAsync();
+
+            return elevators.Select(e => new ElevatorStateDTO
+            {
+                ElevatorId = e.Id,
+                CurrentFloor = e.CurrentFloor,
+                Direction = e.Direction,
+                IsMoving = e.IsMoving
+            }).ToList();
         }
 
-        public async Task DisplayElevatorStatusAsync()
+        public async Task<List<string>> DisplayElevatorStatusAsync()
         {
             var elevators = await _elevatorRepository.GetElevatorsAsync();
-
+            var statuses = new List<string>();
             foreach (var elevator in elevators)
             {
-                Console.WriteLine($"Elevator {elevator.Id}: Floor {elevator.CurrentFloor}, Direction: {elevator.Direction}, Is Moving: {elevator.IsMoving}, Passengers: {elevator.Passengers.Count}");
+                
+                string status = $"Elevator {elevator.Id}: Floor {elevator.CurrentFloor}, Direction: {elevator.Direction}, Is Moving: {elevator.IsMoving}, Passengers: {elevator.Passengers.Count}";
+                Console.WriteLine(status);
+                statuses.Add(status);
+                
             }
+            return statuses;
         }
     }
 }
