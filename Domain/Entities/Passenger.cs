@@ -9,11 +9,8 @@ namespace ElevatorChallenge.Domain.Entities
     public class Passenger
     {
         public int Id { get; set; }
-        public int DestinationFloor { get; private set; }
+        public int DestinationFloor { get; set; }
 
-        public Passenger(int destinationFloor)
-        {
-            DestinationFloor = destinationFloor;
-        }
+        
     }
 }

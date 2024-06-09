@@ -31,7 +31,7 @@ while (true)
             {
                 Console.Write($"Enter destination floor for passenger {i}: ");
                 var destinationFloor = int.Parse(Console.ReadLine());
-                passengers.Add(new Passenger(destinationFloor) { Id = i });
+                passengers.Add(new Passenger { Id = i, DestinationFloor=destinationFloor });
             }
 
             await elevatorManager.AddPassengersToElevatorsAsync(passengers);
