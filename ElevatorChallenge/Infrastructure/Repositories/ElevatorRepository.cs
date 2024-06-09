@@ -1,4 +1,5 @@
 ﻿using ElevatorChallenge.Domain.Entities;
+using ElevatorChallenge.Domain.Entities.Elevators;
 using ElevatorChallenge.Domain.Repositories;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,15 @@ namespace ElevatorChallenge.Infrastructure.Repositories
 
         public ElevatorRepository()
         {
-            // Initialize with some elevators
             _elevators = new List<Elevator>
             {
-                new Elevator(1, 0),
-                new Elevator(2, 0),
-                new Elevator(3, 0)
+                new PassengerElevator(1, 1),
+                new PassengerElevator(2, 5),
+                new PassengerElevator(3, 10),
+                new PassengerElevator(4, 15),
+                new PassengerElevator(5, 20)
+
+
             };
         }
 
