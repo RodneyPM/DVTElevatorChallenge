@@ -1,4 +1,5 @@
 ﻿using ElevatorChallenge.Domain.Entities;
+using ElevatorChallenge.Domain.Entities.Elevators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace ElevatorTestProject
         public void QuickSortPassengers_SortsPassengersCorrectly()
         {
             // Arrange
-            var elevator = new Elevator(1,10);
+            var elevator = new PassengerElevator(1,10);
             var passengers = new List<Passenger>
         {
             new Passenger { Id = 1, DestinationFloor = 5 },

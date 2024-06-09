@@ -1,5 +1,6 @@
 ﻿using ElevatorChallenge.Application.Services;
 using ElevatorChallenge.Domain.Entities;
+using ElevatorChallenge.Domain.Entities.Elevators;
 using ElevatorChallenge.Domain.Repositories;
 using Moq;
 using System;
@@ -29,8 +30,8 @@ namespace ElevatorTestProject
             // Arrange
             var elevators = new List<Elevator>
             {
-                new Elevator(1, 1) ,
-                new Elevator(2, 1)
+                new PassengerElevator(1, 1),
+                new PassengerElevator(2, 1)
             };
 
             _mockRepository.Setup(repo => repo.GetElevatorsAsync()).ReturnsAsync(elevators);
@@ -75,8 +76,8 @@ namespace ElevatorTestProject
             // Arrange
             var elevators = new List<Elevator>
             {
-                new Elevator(1, 1) ,
-                new Elevator(2, 1)
+                new PassengerElevator(1, 10),
+                new PassengerElevator(2, 10)
             };
 
             _mockRepository.Setup(repo => repo.GetElevatorsAsync()).ReturnsAsync(elevators);
@@ -122,8 +123,8 @@ namespace ElevatorTestProject
             // Arrange
             var elevators = new List<Elevator>
             {
-                new Elevator(1, 10),
-                new Elevator(2, 10)
+                new PassengerElevator(1, 10),
+                new PassengerElevator(2, 10)
             };
 
             var passengers1 = new List<Passenger>
@@ -160,8 +161,8 @@ namespace ElevatorTestProject
             // Arrange
             var elevators = new List<Elevator>
             {
-                new Elevator(1, 1),
-                new Elevator(2, 3)
+                new PassengerElevator(1, 1),
+                new PassengerElevator(2, 3)
             };
 
             _mockRepository.Setup(repo => repo.GetElevatorsAsync()).ReturnsAsync(elevators);

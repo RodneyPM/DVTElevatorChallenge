@@ -1,4 +1,5 @@
 ﻿using ElevatorChallenge.Domain.Entities;
+using ElevatorChallenge.Domain.Entities.Elevators;
 using ElevatorChallenge.Domain.Repositories;
 using ElevatorChallenge.Infrastructure.Repositories;
 using Moq;
@@ -26,7 +27,7 @@ namespace ElevatorTestProject
         [TestMethod]
         public async Task SaveElevatorsAsync_SavesElevatorsCorrectly()
         {
-            var elevator = new Elevator(1, 10);
+            var elevator = new PassengerElevator(1, 10);
 
 
             bool result = await _elevatorRepository.Save(elevator);
